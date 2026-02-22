@@ -10,13 +10,17 @@ function withToolDefaults(toolName: string, args: Record<string, unknown>): Reco
   if (toolName !== 'entry_list')
     return args
 
-  if (typeof args.publishedAfter === 'string')
-    return args
+  const defaults: Record<string, unknown> = {}
 
-  return {
-    ...args,
-    publishedAfter: new Date(Date.now() - LAST_7_DAYS_MS).toISOString(),
-  }
+  if (typeof args.publishedAfter !== 'string')
+    defaults.publishedAfter = new Date(Date.now() - LAST_7_DAYS_MS).toISOString()
+
+  // Hard cap: never pull more than 20 entries to protect token budget
+  const requestedLimit = typeof args.limit === 'number' ? args.limit : Number.POSITIVE_INFINITY
+  if (!args.limit || requestedLimit > 20)
+    defaults.limit = 20
+
+  return Object.keys(defaults).length > 0 ? { ...args, ...defaults } : args
 }
 
 const server = new McpServer({
