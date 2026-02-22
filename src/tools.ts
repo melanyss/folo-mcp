@@ -5,7 +5,6 @@ const zodUserId = z.string().optional().describe('Filter by user ID, if not prov
 const zodFeedId = z.string().optional().describe('Filter by feed ID')
 const zodListId = z.string().optional().describe('Filter by list ID')
 const zodFeedIdList = z.array(z.string()).optional().describe('Filter by list of feed IDs')
-const zodInboxId = z.string().optional().describe('Filter by inbox ID')
 
 export const tools = {
   entry_list: {
@@ -25,6 +24,18 @@ export const tools = {
       publishedAfter: z.string().datetime().optional().describe('Filter by published date after this date'),
       publishedBefore: z.string().datetime().optional().describe('Filter by published date before this date'),
       isCollection: z.boolean().optional().describe('Filter by collection status, set true for Starred'),
+      withContent: z.boolean().optional().describe('Include content in the response'),
+    },
+  },
+  entry_info: {
+    name: 'entry_info',
+    description: 'Get information about a specific entry by ID',
+    query: {
+      path: '/entries',
+      method: 'GET',
+    },
+    input: {
+      id: z.string().describe('Entry ID'),
       withContent: z.boolean().optional().describe('Include content in the response'),
     },
   },
@@ -61,23 +72,6 @@ export const tools = {
     input: {
       id: z.string().optional().describe('Feed ID'),
       url: z.string().url().optional().describe('Feed URL'),
-    },
-  },
-  mark_read: {
-    name: 'mark_read',
-    description: 'Mark entries as read by view, feed ID, or list ID, or inbox ID',
-    query: {
-      path: '/reads/all',
-      method: 'POST',
-    },
-    input: {
-      view: zodView,
-      feedId: zodFeedId,
-      listId: zodListId,
-      inboxId: zodInboxId,
-      feedIdList: zodFeedIdList,
-      startTime: z.number().optional(),
-      endTime: z.number().optional(),
     },
   },
 }
